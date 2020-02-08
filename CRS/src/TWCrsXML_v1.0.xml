@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crs:CRS_OECD xmlns:cfc="urn:oecd:ties:TWcommontypesfatcacrs:v1" xmlns:crs="urn:oecd:ties:crs:v1" xmlns:iso="urn:oecd:ties:isocrstypes:v1" xmlns:stf="urn:oecd:ties:stf:v4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oecd:ties:crs:v1 ../java/TWCrsXML_v1.0.xsd ">
+  <crs:MessageSpec>
+    <crs:SendingCompanyIN>crs:SendingCompanyIN</crs:SendingCompanyIN>
+    <crs:TransmittingCountry>TW</crs:TransmittingCountry>
+    <crs:ReceivingCountry>TW</crs:ReceivingCountry>
+    <crs:MessageType>CRS</crs:MessageType>
+    <crs:MessageRefId>crs:MessageRefId</crs:MessageRefId>
+    <crs:MessageTypeIndic>CRS701</crs:MessageTypeIndic>
+    <crs:ReportingPeriod>2001-01-01</crs:ReportingPeriod>
+    <crs:Timestamp>2001-12-31T12:00:00</crs:Timestamp>
+  </crs:MessageSpec>
+  <crs:CrsBody>
+    <crs:ReportingFI>
+      <crs:IN>crs:IN</crs:IN>
+      <crs:Name>crs:Name</crs:Name>
+      <crs:Address>
+        <cfc:CountryCode>AF</cfc:CountryCode>
+        <cfc:AddressFree>cfc:AddressFree</cfc:AddressFree>
+      </crs:Address>
+      <crs:DocSpec>
+        <stf:DocTypeIndic>OECD0</stf:DocTypeIndic>
+        <stf:DocRefID>stf:DocRefID</stf:DocRefID>
+      </crs:DocSpec>
+    </crs:ReportingFI>
+    <crs:ReportingGroup/>
+  </crs:CrsBody>
+</crs:CRS_OECD>
