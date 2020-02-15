@@ -109,15 +109,15 @@ public class Conver2XML {
 			AddressType addressType = objectFactory.createAddressType();
 			//addressType.setLegalAddressType(OECDLegalAddressTypeEnumType.OECD_301);// Optional
 			JAXBElement<CountryCodeType> CountryCodeElement = objectFactory
-					.createAddressTypeCountryCode(CountryCodeType.fromValue(msgref.getR_COUNTRYCODE()));// 這邊要補CountryCode
+					.createAddressTypeCountryCode(CountryCodeType.fromValue(msgref.getR_COUNTRYCODE()));
 			addressType.getContent().add(CountryCodeElement);
-
-//			JAXBElement<String> addressFreeElement = objectFactory
-//					.createAddressTypeAddressFree(msgref.getR_ADDRESSFREE());
-//			addressType.getContent().add(addressFreeElement);
+			
+			
+			JAXBElement<String> addressFreeElement = objectFactory.createAddressTypeAddressFree(msgref.getR_ADDRESSFREE());
+			addressType.getContent().add(addressFreeElement);
 
 //			AddressFixType addressFixType = new AddressFixType();
-			
+//			
 //			addressFixType.setStreet(" ");// 街路號,不接受中文
 //			addressFixType.setBuildingIdentifier(" ");// 建物名稱,不接受中文
 //			addressFixType.setSuiteIdentifier(" ");// 門房號,不接受中文
@@ -128,8 +128,7 @@ public class Conver2XML {
 //			addressFixType.setCity(" ");// 城市,不接受中文
 //			addressFixType.setCountrySubentity(" ");// 國家行政區域,不接受中文
 
-//			addressFreeElement = objectFactory.createAddressTypeAddressFree(" ");// 固定格式地址下自由格式地址
-//			addressType.getContent().add(addressFreeElement);
+
 
 //			JAXBElement<AddressFixType> addressJaxbElement = objectFactory.createAddressTypeAddressFix(addressFixType);
 //			addressType.getContent().add(addressJaxbElement);
@@ -141,7 +140,7 @@ public class Conver2XML {
 			
 			//   DocSpec
 			DocSpecType docSpecType = new DocSpecType();
-			docSpecType.setDocTypeIndic(OECDDocTypeIndicEnumType.fromValue(msgref.getDOCTYPEINDIC()));
+			docSpecType.setDocTypeIndic(OECDDocTypeIndicEnumType.fromValue("OECD1"));//msgref.getDOCTYPEINDIC() 取到CECD1
 			docSpecType.setDocRefID(msgref.getDOCREFID());
 //			docSpecType.setCorrDocRefID(" ");// 更正文檔編號
 			correctableOrganisationPartyType.setDocSpec(docSpecType);
@@ -197,8 +196,13 @@ public class Conver2XML {
 						partyType.getResCountryCode().add(CountryCodeType.fromValue(countryCode.getRESCOUNTRYCODE()));
 						//TIN
 						TINType tinType = objectFactory.createTINType();
-						tinType.setValue(countryCode.getTIN());
-						tinType.setIssuedBy(CountryCodeType.TW);
+						
+						if(countryCode.getTIN() == null) {//////////////////////////////////////
+							tinType.setValue("12345");
+						}else {
+							tinType.setValue(countryCode.getTIN());
+						}
+//						tinType.setIssuedBy(CountryCodeType.TW);
 						partyType.getTIN().add(tinType);
 						//Name
 						NamePersonType namePersonType = objectFactory.createNamePersonType();
@@ -224,16 +228,23 @@ public class Conver2XML {
 						//Address
 						addressType = objectFactory.createAddressType();
 						//addressType.setLegalAddressType(OECDLegalAddressTypeEnumType.OECD_301);//Optional
+						
 						CountryCodeElement = null;
-						if (acctholder.getCOUNTRYCODE() != null) {
-							CountryCodeElement = objectFactory
-									.createAddressTypeCountryCode(CountryCodeType.fromValue(acctholder.getCOUNTRYCODE()));// 這邊要補CountryCode
-	
+						//ACCTHOLDER中 有些countrycode值為NULL
+						if (acctholder.getCOUNTRYCODE() == null) {//////////////////////////////////////
+							CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.fromValue("TW"));
+						}else {
+							CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.fromValue(acctholder.getCOUNTRYCODE()));
 						}
-						addressType.getContent().add(CountryCodeElement);// 這邊要補CountryCode
-	//					addressFreeElement = objectFactory
-	//							.createAddressTypeAddressFree(acctholder.getADDRESSFREE());
-	//					addressType.getContent().add(addressFreeElement);// 這邊要補AddressFree
+						addressType.getContent().add(CountryCodeElement);
+						// ---------------------------------------------------------------------------------------------------------------------------------------------------
+						if(acctholder.getADDRESSFREE() == null) {//////////////////////////////////////
+							addressFreeElement = objectFactory.createAddressTypeAddressFree(" ");
+						}else {
+							addressFreeElement = objectFactory.createAddressTypeAddressFree(acctholder.getADDRESSFREE());
+						}
+						addressType.getContent().add(addressFreeElement);
+						
 	//					addressFixType = objectFactory.createAddressFixType();
 						
 	//					addressFixType.setStreet(" ");// 街路號,不接受中文
@@ -246,8 +257,8 @@ public class Conver2XML {
 	//					addressFixType.setCity(" ");// 城市,不接受中文
 	//					addressFixType.setCountrySubentity(" ");// 國家行政區域,不接受中文
 						
-	//					addressFreeElement = objectFactory.createAddressTypeAddressFree(" ");// 固定格式地址下自由格式地址
-	//					addressType.getContent().add(addressFreeElement);
+//						addressFreeElement = objectFactory.createAddressTypeAddressFree(" ");// 固定格式地址下自由格式地址
+//						addressType.getContent().add(addressFreeElement);
 						
 	//					addressJaxbElement = objectFactory
 	//							.createAddressTypeAddressFix(addressFixType);
@@ -259,8 +270,7 @@ public class Conver2XML {
 						birthInfo.setBirthDate(dateTurn(acctholder.getBIRTHDATE()));// 之後要回來轉型
 	//					birthInfo.setCity(" ");// 出生城市
 	//					birthInfo.setCitySubentity(" ");// 出生城市行政區域
-						PersonPartyType.BirthInfo.CountryInfo countryInfo = objectFactory
-								.createPersonPartyTypeBirthInfoCountryInfo();
+						PersonPartyType.BirthInfo.CountryInfo countryInfo = objectFactory.createPersonPartyTypeBirthInfoCountryInfo();
 						countryInfo.setCountryCode(CountryCodeType.TW);
 	//					countryInfo.setFormerCountryName(" ");// 原出生國家或地區名稱
 						birthInfo.setCountryInfo(countryInfo);
@@ -285,13 +295,22 @@ public class Conver2XML {
 						
 						//IN
 						organisationINType = objectFactory.createOrganisationINType();
-						organisationINType.setValue(code.getTIN());
-						organisationINType.setIssuedBy(CountryCodeType.TW);// Optional
+						if(code.getTIN() == null) {//////////////////////////////////////
+							organisationINType.setValue("12345");
+						}else {
+							organisationINType.setValue(code.getTIN());
+						}
+//						organisationINType.setIssuedBy(CountryCodeType.TW);// Optional
 	//					organisationINType.setINType(" ");// TWIN
 						organisationPartyType.getIN().add(organisationINType);
 						//name
 						nameOrganisationType = objectFactory.createNameOrganisationType();
-						nameOrganisationType.setValue(acctholder.getNAME());
+						//DB中無資料
+						if(acctholder.getNAME() == null) {//////////////////////////////////////
+							nameOrganisationType.setValue("noValue");
+						}else {
+							nameOrganisationType.setValue(acctholder.getNAME());
+						}
 						//nameOrganisationType.setNameType(OECDNameTypeEnumType.OECD_202);// Optional
 						organisationPartyType.getName().add(nameOrganisationType);
 						//address
@@ -299,14 +318,20 @@ public class Conver2XML {
 						//addressType.setLegalAddressType(OECDLegalAddressTypeEnumType.OECD_301);// Optional
 						// -------------------------------------------------------------------------------------------------------------------------------------------------
 						CountryCodeElement = null;
-						if (acctholder.getCOUNTRYCODE() != null) {
-							CountryCodeElement = objectFactory
-									.createAddressTypeCountryCode(CountryCodeType.fromValue(acctholder.getCOUNTRYCODE()));// 這邊要補CountryCode
+						//ACCTHOLDER中 有些countrycode值為NULL
+						if (acctholder.getCOUNTRYCODE() == null) {
+							CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.fromValue("TW"));
+						}else {
+							CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.fromValue(acctholder.getCOUNTRYCODE()));
 						}
 						addressType.getContent().add(CountryCodeElement);
 						// ---------------------------------------------------------------------------------------------------------------------------------------------------
-	//					addressFreeElement = objectFactory.createAddressTypeAddressFree(acctholder.getADDRESSFREE());
-	//					addressType.getContent().add(addressFreeElement);
+						if(acctholder.getADDRESSFREE() == null) {//////////////////////////////////////
+							addressFreeElement = objectFactory.createAddressTypeAddressFree(" ");
+						}else {
+							addressFreeElement = objectFactory.createAddressTypeAddressFree(acctholder.getADDRESSFREE());
+						}
+						addressType.getContent().add(addressFreeElement);
 	//					addressFixType = objectFactory.createAddressFixType();
 						
 	//					addressFixType.setStreet(" ");// 街路號,不接受中文
@@ -353,7 +378,7 @@ public class Conver2XML {
 					person.getTIN().add(tinType);
 					//name
 					NamePersonType namePersonType = objectFactory.createNamePersonType();
-					namePersonType.setNameType(OECDNameTypeEnumType.OECD_202);
+					//namePersonType.setNameType(OECDNameTypeEnumType.OECD_202);//Optional
 //					namePersonType.setPrecedingTitle(" ");// 尊稱
 //					namePersonType.getTitle().add(" ");// 稱謂
 					NamePersonType.FirstName firstName = objectFactory.createNamePersonTypeFirstName();
@@ -375,13 +400,18 @@ public class Conver2XML {
 					//address
 					addressType = objectFactory.createAddressType();
 					if(subOwner.get("countryCode") == null) {
-						CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.TW); //TODO 
+						CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.TW);
 					}else {
-						CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.fromValue((String)subOwner.get("countryCode")));// 這邊要回來改錶
+						CountryCodeElement = objectFactory.createAddressTypeCountryCode(CountryCodeType.fromValue((String)subOwner.get("countryCode")));
 					}
 					addressType.getContent().add(CountryCodeElement);
-//					addressFreeElement = objectFactory.createAddressTypeAddressFree((String)subOwner.get("addressfree"));// 這邊要回來改錶
-//					addressType.getContent().add(addressFreeElement);
+					
+					if(subOwner.get("addressfree") == null) {//////////////////////////////////////
+						addressFreeElement = objectFactory.createAddressTypeAddressFree(" ");
+					}else {
+						addressFreeElement = objectFactory.createAddressTypeAddressFree((String)subOwner.get("addressfree"));
+					}
+					addressType.getContent().add(addressFreeElement);
 					// -----------------------------------------------------------------------------------------------------------------------------------------
 
 //					addressFixType = objectFactory.createAddressFixType();
@@ -414,7 +444,7 @@ public class Conver2XML {
 					//ctrlpersontype
 					String ctrlpersonType = (String)subOwner.get("ctrlpersontype");
 					if (!(ctrlpersonType.equals(" "))) {
-						controllingPersonType.setCtrlgPersonType(CrsCtrlgPersonTypeEnumType.fromValue(ctrlpersonType));// 抓資料有問題，第一筆就沒有相符條件
+						controllingPersonType.setCtrlgPersonType(CrsCtrlgPersonTypeEnumType.fromValue(ctrlpersonType));
 
 					}
 					correctableAccountReportType.getControllingPerson().add(controllingPersonType);
@@ -434,42 +464,43 @@ public class Conver2XML {
 				correctableAccountReportType.setAccountBalance(monAmntType);
 
 				PaymentType paymentType = objectFactory.createPaymentType();
-				if (timeCheck()) {
-					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_501()));// 要調時間，對表之後調
-					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_501()));// 要對時間,要改錶
+				
+					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_501()));
+					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_501()));
 					monAmntType = objectFactory.createMonAmntType();
 					monAmntType.setValue(bigDecimal);
-					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_501()));// 要調時間，對表之後調
+					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_501()));
 					paymentType.setPaymentAmnt(monAmntType);
 					correctableAccountReportType.getPayment().add(paymentType);
 
 					paymentType = objectFactory.createPaymentType();
-					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_502()));// 要調時間，對表之後調
-					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_502()));// 要對時間,要改錶
+					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_502()));
+					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_502()));
 					monAmntType = objectFactory.createMonAmntType();
 					monAmntType.setValue(bigDecimal);
-					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_502()));// 要調時間，對表之後調
+					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_502()));
 					paymentType.setPaymentAmnt(monAmntType);
 					correctableAccountReportType.getPayment().add(paymentType);
-
+					String checkYear = msgref.getREPORTINGPERIOD().substring(0,4);
+					if(!checkYear.equals("2019")) {
+						paymentType = objectFactory.createPaymentType();
+						paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_503()));
+						bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_503()));
+						monAmntType = objectFactory.createMonAmntType();
+						monAmntType.setValue(bigDecimal);
+						monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_503()));
+						paymentType.setPaymentAmnt(monAmntType);
+						correctableAccountReportType.getPayment().add(paymentType);
+					}
 					paymentType = objectFactory.createPaymentType();
-					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_503()));// 要調時間，對表之後調
-					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_503()));// 要對時間,要改錶
+					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_504()));
+					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_504()));
 					monAmntType = objectFactory.createMonAmntType();
 					monAmntType.setValue(bigDecimal);
-					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_503()));// 要調時間，對表之後調
+					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_504()));
 					paymentType.setPaymentAmnt(monAmntType);
 					correctableAccountReportType.getPayment().add(paymentType);
-
-					paymentType = objectFactory.createPaymentType();
-					paymentType.setType(CrsPaymentTypeEnumType.fromValue(acctholder.getTYPE_504()));// 要調時間，對表之後調
-					bigDecimal = new BigDecimal(String.valueOf(acctholder.getPAYMENTAMNT_504()));// 要對時間,要改錶
-					monAmntType = objectFactory.createMonAmntType();
-					monAmntType.setValue(bigDecimal);
-					monAmntType.setCurrCode(CurrCodeType.fromValue(acctholder.getCURRCODE_504()));// 要調時間，對表之後調
-					paymentType.setPaymentAmnt(monAmntType);
-					correctableAccountReportType.getPayment().add(paymentType);
-				}
+				
 				reportingGroup.getAccountReport().add(correctableAccountReportType);
 				index++;
 			}
@@ -492,7 +523,7 @@ public class Conver2XML {
 			e.printStackTrace();
 		} finally {
 			try {
-				connectionDemo.connect().close();
+				//connectionDemo.connect().close();
 				System.out.println("關閉連線");
 			} catch (Exception e2) {
 				e2.printStackTrace();

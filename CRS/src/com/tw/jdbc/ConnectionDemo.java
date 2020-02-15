@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class ConnectionDemo {
 		ResultSet set = null;
 		List result = new ArrayList();
 		String sql = "SELECT * FROM DM_WMG.CRS_XML_SUBSOWNER W "
-				+ " WHERE W.SNAP_YYYYMMDD = '" + accountHolder.getSNAP_YYYYMMDD()  
+				+ " WHERE W.SNAP_YYYYMMDD = '" + accountHolder.getSNAP_YYYYMMDD()
 				+ "' AND   W.MESSAGEREFID = '" + accountHolder.getMESSAGEREFID()
 				+ "' AND   W.ID = '" + accountHolder.getID() + "'";
 		try {
@@ -187,6 +188,47 @@ public class ConnectionDemo {
 
 	}
 	
+	public void insSuccMessDB()throws ClassNotFoundException, SQLException {
+		// 訊息是否寫入DB成功
+		boolean status = false;
+		// 建立Oracle連線
+		Connection connection = connect();
+		Statement st = connection.createStatement();
+		String getMessagerefidSql = "SELECT MESSAGEREFID FROM DM_WMG.CRS_XML_MSGREF";
+		ResultSet rs = st.executeQuery(getMessagerefidSql);
+		try {
+			// 取得目前系統時間並寫入DB
+			java.util.Date now = new java.util.Date(); // 取得現在時間
+			SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sGMT = sf.format(now);
+			while(rs.next()) {
+				String insertSuccessSql = "insert into DM_WMG.CRS_JAVA_LOG(EXEC_TIME, DOCREFID ,LOG) "
+						+ " Values(to_date('"
+						+ sGMT
+						+ "','YYYY/MM/DD HH24:MI:SS'),'"
+						+ rs.getString("MESSAGEREFID") + "','FINISH')";
+				String commit = "COMMIT";
+				st = connection.createStatement();
+				st.executeQuery(insertSuccessSql);
+				st.executeQuery(commit);
+			}
+			status = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (status == true) {
+				System.out.println("DB writes success!");
+			} else {
+				System.out.println("DB writes fail!");
+			}
+			if(st != null) {
+				st.close();
+			}
+			if(connection != null) {
+				connection.close();
+			}
+		}
+	}
 
 	
 
@@ -377,6 +419,7 @@ public class ConnectionDemo {
 		}
 		return set;
 	}
+	
 
 	public void close(Connection conn, PreparedStatement stmt, ResultSet rs) throws SQLException {
 		try {
