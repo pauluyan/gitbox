@@ -1,2 +1,5 @@
 eclipse.preferences.version=1
-encoding//src/ValidateXsdXml.java=UTF-8
+encoding//src/com/tw/jdbc/ConnectionDemo.java=UTF-8
+encoding//src/com/tw/main/CRSXmlGen.java=UTF-8
+encoding//src/com/tw/main/Conver2XML.java=UTF-8
+encoding//src/com/tw/main/ValidateXsdXml.java=UTF-8
